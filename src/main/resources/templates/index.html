@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Notas de Estudo com IA</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f4f6f8; margin: 0; color: #222; }
+        header { background: #2d4a7a; color: #fff; padding: 16px 24px; }
+        main { max-width: 800px; margin: 24px auto; padding: 0 16px; }
+        .card { background: #fff; border-radius: 8px; padding: 16px; margin-bottom: 16px;
+                box-shadow: 0 1px 3px rgba(0,0,0,.15); }
+        input[type=text], textarea { width: 100%; padding: 8px; margin: 6px 0 12px;
+                box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; font: inherit; }
+        textarea { min-height: 110px; }
+        button { background: #2d4a7a; color: #fff; border: 0; padding: 8px 14px;
+                 border-radius: 4px; cursor: pointer; margin-right: 6px; }
+        button.perigo { background: #b33; }
+        .ia { background: #eef4ff; border-left: 4px solid #2d4a7a; padding: 8px 12px;
+              margin-top: 10px; white-space: pre-line; }
+        .erro { background: #fde8e8; color: #900; padding: 10px; border-radius: 4px; margin-bottom: 16px; }
+        .acoes { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-top: 12px; }
+        .acoes form { margin: 0; }
+        .acoes input[type=text] { width: 220px; margin: 0; }
+        .conteudo { white-space: pre-line; }
+    </style>
+</head>
+<body>
+<header><h1>📝 Notas de Estudo com IA</h1></header>
+<main>
+    <div class="erro" th:if="${erro}" th:text="${erro}"></div>
+
+    <div class="card">
+        <h2>Nova nota</h2>
+        <form th:action="@{/notas}" th:object="${nota}" method="post">
+            <label>Título</label>
+            <input type="text" th:field="*{titulo}" required>
+            <label>Conteúdo</label>
+            <textarea th:field="*{conteudo}" required></textarea>
+            <button type="submit">Salvar nota</button>
+        </form>
+    </div>
+
+    <p th:if="${#lists.isEmpty(notas)}">Nenhuma nota cadastrada ainda.</p>
+
+    <div class="card" th:each="n : ${notas}">
+        <h3 th:text="${n.titulo}"></h3>
+        <p class="conteudo" th:text="${n.conteudo}"></p>
+
+        <div class="ia" th:if="${n.resumo}">
+            <strong>📌 Resumo (IA):</strong><br><span th:text="${n.resumo}"></span>
+        </div>
+        <div class="ia" th:if="${n.perguntas}">
+            <strong>❓ Perguntas de estudo (IA):</strong><br><span th:text="${n.perguntas}"></span>
+        </div>
+        <div class="ia" th:if="${idResposta != null and idResposta == n.id}">
+            <strong>💬 Você:</strong> <span th:text="${pergunta}"></span><br>
+            <strong>🤖 IA:</strong> <span th:text="${resposta}"></span>
+        </div>
+
+        <div class="acoes">
+            <form th:action="@{/notas/{id}/resumir(id=${n.id})}" method="post">
+                <button type="submit">Resumir com IA</button>
+            </form>
+            <form th:action="@{/notas/{id}/perguntas(id=${n.id})}" method="post">
+                <button type="submit">Gerar perguntas</button>
+            </form>
+            <form th:action="@{/notas/{id}/perguntar(id=${n.id})}" method="post">
+                <input type="text" name="pergunta" placeholder="Pergunte algo sobre a nota" required>
+                <button type="submit">Perguntar</button>
+            </form>
+            <form th:action="@{/notas/{id}/excluir(id=${n.id})}" method="post">
+                <button type="submit" class="perigo">Excluir</button>
+            </form>
+        </div>
+    </div>
+</main>
+</body>
+</html>
