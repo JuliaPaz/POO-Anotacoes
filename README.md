@@ -34,4 +34,4 @@ A integração permite gerar resumos, perguntas de estudo e respostas baseadas n
 -Execute a aplicação -> mvn spring-boot:run
 -Acesse o sistema em http://localhost:8080
 
-# Projeto desenvolvido para fins acadêmicos!!
+Projeto desenvolvido para fins acadêmicos!!
